@@ -1,94 +1,107 @@
 #include <stdio.h>
 
-// Definição de constantes para facilitar a manutenção do código
+// Definição de constantes para o tamanho do tabuleiro e dos navios
 #define TAM_TAB 10
 #define TAM_NAVIO 3
 
 int main() {
-    // 1. Representação do Tabuleiro
-    // Cria uma matriz 10x10 e inicializa todas as posições com 0 (água)
+    // 1. Inicializa o tabuleiro 10x10 com 0 (representando a água)
     int tabuleiro[TAM_TAB][TAM_TAB] = {0};
 
-    // 2. Declaração dos vetores dos navios
-    // Como solicitado, criamos vetores unidimensionais onde '3' representa parte do navio
-    int navioHorizontal[TAM_NAVIO] = {3, 3, 3};
-    int navioVertical[TAM_NAVIO] = {3, 3, 3};
-
-    // Coordenadas iniciais escolhidas (hardcoded) para o navio Horizontal (Linha 2, Coluna 1)
-    int linhaHor = 2;
-    int colHor = 1;
-
-    // Coordenadas iniciais escolhidas (hardcoded) para o navio Vertical (Linha 5, Coluna 7)
-    int linhaVert = 5;
-    int colVert = 7;
+    // Variável auxiliar para checar sobreposição antes de posicionar
+    int podePosicionar;
 
     // ---------------------------------------------------------
-    // 3. Validação e Posicionamento do Navio Horizontal
+    // NAVIO 1: HORIZONTAL (Linha constante, Coluna aumenta)
     // ---------------------------------------------------------
-    // Verifica se as coordenadas estão dentro dos limites e se o navio cabe na linha
-    if (linhaHor >= 0 && linhaHor < TAM_TAB && colHor >= 0 && (colHor + TAM_NAVIO) <= TAM_TAB) {
-        
-        int sobreposicao = 0;
-        
-        // Verifica se há alguma outra peça no caminho (sobreposição)
+    int linhaH = 2, colH = 1;
+    podePosicionar = 1; // Assumimos que é possível até provar o contrário
+
+    // Verifica limites do tabuleiro
+    if (colH + TAM_NAVIO <= TAM_TAB) {
+        // Verifica sobreposição
         for (int i = 0; i < TAM_NAVIO; i++) {
-            if (tabuleiro[linhaHor][colHor + i] != 0) {
-                sobreposicao = 1; 
-            }
+            if (tabuleiro[linhaH][colH + i] != 0) podePosicionar = 0;
         }
-
-        // Se não houver sobreposição, copia os dados do vetor do navio para a matriz
-        if (sobreposicao == 0) {
+        // Posiciona se for válido
+        if (podePosicionar) {
             for (int i = 0; i < TAM_NAVIO; i++) {
-                tabuleiro[linhaHor][colHor + i] = navioHorizontal[i];
+                tabuleiro[linhaH][colH + i] = 3;
             }
-        } else {
-            printf("Erro: Sobreposicao detectada ao posicionar navio horizontal.\n");
         }
     } else {
-        printf("Erro: Coordenadas invalidas para o navio horizontal.\n");
+        printf("Erro: Navio horizontal fora dos limites.\n");
     }
 
     // ---------------------------------------------------------
-    // 4. Validação e Posicionamento do Navio Vertical
+    // NAVIO 2: VERTICAL (Linha aumenta, Coluna constante)
     // ---------------------------------------------------------
-    // Verifica se as coordenadas estão dentro dos limites e se o navio cabe na coluna
-    if (colVert >= 0 && colVert < TAM_TAB && linhaVert >= 0 && (linhaVert + TAM_NAVIO) <= TAM_TAB) {
-        
-        int sobreposicao = 0;
+    int linhaV = 5, colV = 8;
+    podePosicionar = 1;
 
-        // Verifica se há alguma outra peça no caminho (sobreposição)
+    if (linhaV + TAM_NAVIO <= TAM_TAB) {
         for (int i = 0; i < TAM_NAVIO; i++) {
-            if (tabuleiro[linhaVert + i][colVert] != 0) {
-                sobreposicao = 1;
-            }
+            if (tabuleiro[linhaV + i][colV] != 0) podePosicionar = 0;
         }
-
-        // Se não houver sobreposição, copia os dados do vetor do navio para a matriz
-        if (sobreposicao == 0) {
+        if (podePosicionar) {
             for (int i = 0; i < TAM_NAVIO; i++) {
-                tabuleiro[linhaVert + i][colVert] = navioVertical[i];
+                tabuleiro[linhaV + i][colV] = 3;
             }
-        } else {
-            printf("Erro: Sobreposicao detectada ao posicionar navio vertical.\n");
         }
     } else {
-        printf("Erro: Coordenadas invalidas para o navio vertical.\n");
+        printf("Erro: Navio vertical fora dos limites.\n");
     }
 
     // ---------------------------------------------------------
-    // 5. Exibição do Tabuleiro
+    // NAVIO 3: DIAGONAL 1 (Baixo e Direita -> Linha++, Coluna++)
     // ---------------------------------------------------------
-    printf("--- Batalha Naval - Posicionamento dos Navios ---\n\n");
+    int linhaD1 = 6, colD1 = 2;
+    podePosicionar = 1;
+
+    // Valida se não vai estourar o limite inferior nem o limite direito
+    if (linhaD1 + TAM_NAVIO <= TAM_TAB && colD1 + TAM_NAVIO <= TAM_TAB) {
+        for (int i = 0; i < TAM_NAVIO; i++) {
+            if (tabuleiro[linhaD1 + i][colD1 + i] != 0) podePosicionar = 0;
+        }
+        if (podePosicionar) {
+            for (int i = 0; i < TAM_NAVIO; i++) {
+                tabuleiro[linhaD1 + i][colD1 + i] = 3;
+            }
+        }
+    } else {
+        printf("Erro: Navio diagonal 1 fora dos limites.\n");
+    }
+
+    // ---------------------------------------------------------
+    // NAVIO 4: DIAGONAL 2 (Baixo e Esquerda -> Linha++, Coluna--)
+    // ---------------------------------------------------------
+    int linhaD2 = 0, colD2 = 7;
+    podePosicionar = 1;
+
+    // Valida se não vai estourar o limite inferior nem o limite esquerdo (coluna < 0)
+    if (linhaD2 + TAM_NAVIO <= TAM_TAB && colD2 - TAM_NAVIO >= -1) {
+        for (int i = 0; i < TAM_NAVIO; i++) {
+            if (tabuleiro[linhaD2 + i][colD2 - i] != 0) podePosicionar = 0;
+        }
+        if (podePosicionar) {
+            for (int i = 0; i < TAM_NAVIO; i++) {
+                tabuleiro[linhaD2 + i][colD2 - i] = 3;
+            }
+        }
+    } else {
+        printf("Erro: Navio diagonal 2 fora dos limites.\n");
+    }
+
+    // ---------------------------------------------------------
+    // EXIBIÇÃO DO TABULEIRO COMPLETO
+    // ---------------------------------------------------------
+    printf("--- Batalha Naval - Aventureiro ---\n\n");
     
-    // Loops aninhados para percorrer as linhas e colunas do tabuleiro
     for (int i = 0; i < TAM_TAB; i++) {
         for (int j = 0; j < TAM_TAB; j++) {
-            // Imprime o valor da coordenada atual seguido de um espaço para legibilidade
             printf("%d ", tabuleiro[i][j]);
         }
-        // Pula para a próxima linha após imprimir todas as colunas da linha atual
-        printf("\n");
+        printf("\n"); // Quebra de linha ao fim de cada linha da matriz
     }
 
     return 0;
